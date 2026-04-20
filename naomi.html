@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentence Patterns Quiz | IQ Tech</title>
+
+<style>
+/* (Same CSS as before, only minor tweaks for MCQs) */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: linear-gradient(135deg, #141e30, #243b55);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+header { width: 100%; background: #003366; color: white; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 10px 10px 0 0; margin-bottom: 10px; }
+nav { display: flex; justify-content: center; align-items: center; gap: 30px; background: #0055aa; padding: 12px; width: 100%; border-radius: 0 0 20px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+nav a { color: white; text-decoration: none; font-weight: bold; font-size: 15px; transition: 0.3s; }
+nav a:hover { color: #ffd700; }
+.page { display: flex; justify-content: center; gap: 20px; width: 100%; max-width: 1200px; align-items: flex-start; }
+.ad-side { width: 160px; background: #ddd; text-align: center; padding: 10px; font-weight: bold; border-radius: 10px; min-height: 300px; display: flex; justify-content: center; align-items: center; }
+.container { flex: 1; max-width: 900px; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 25px; box-shadow: 0 25px 60px rgba(0,0,0,0.35); padding: 40px; transition: 0.3s ease; }
+.ad-inline { margin: 20px 0; background: #ccc; padding: 15px; text-align: center; font-weight: bold; border-radius: 8px; }
+.setup { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+.setup input { padding: 14px; border-radius: 12px; border: 1px solid #ddd; font-size: 15px; transition: 0.3s; }
+.setup input:focus { outline: none; border-color: #1e3c72; box-shadow: 0 0 10px rgba(30,60,114,0.3); }
+button { padding: 14px; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.3s ease; }
+.start-btn { width: 100%; background: #1e3c72; color: white; margin-bottom: 15px; }
+.start-btn:hover { background: #2a5298; transform: translateY(-2px); }
+.nav-buttons { display: flex; justify-content: space-between; margin-top: 20px; gap: 10px; }
+.nav-buttons button { background: #2a5298; color: white; flex: 1; }
+.nav-buttons button:hover { background: #1e3c72; }
+#submitAll { display: none; width: 100%; margin-top: 20px; background: #28a745; color: white; }
+#submitAll:hover { background: #1f7d36; }
+.timer { text-align: center; font-weight: bold; font-size: 18px; margin: 20px 0; color: #c0392b; }
+.question-box { background: #f8f9fb; padding: 18px; border-radius: 18px; margin-bottom: 15px; border: 1px solid #eee; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+.question-box p { margin-bottom: 8px; font-weight: 500; }
+.feedback { margin-top: 6px; font-weight: bold; }
+.correct { color: #28a745; }
+.wrong { color: #c0392b; }
+#scoreBox { margin-top: 20px; padding: 15px; border-radius: 15px; background: #eafaf1; border-left: 6px solid #28a745; font-weight: bold; text-align: center; font-size: 18px; }
+.ad-bottom { width: 100%; background: #ccc; text-align: center; padding: 15px; font-weight: bold; border-radius: 8px; margin-top: 20px; }
+@media(max-width:900px){ .ad-side { display: none; } .setup { grid-template-columns: 1fr; } }
+</style>
+</head>
+
+<body>
+
+<header>IQ Tech  Quiz</header>
+
+<nav>
+  <a href="topics.html">Topics</a>
+  <a href="pdf.html">PDFs</a>
+  <a href="about.html">About</a>
+</nav>
+
+<div class="page">
+  <div class="ad-side">Left Ad</div>
+
+  <div class="container">
+    <div class="ad-inline">Top Banner Ad</div>
+
+    <div class="setup">
+      <input type="number" id="range" placeholder="Number of Questions (e.g. 20)">
+      <input type="number" id="timeLimit" placeholder="Time (minutes)">
+    </div>
+
+    <button class="start-btn" onclick="startQuiz()">Start Quiz</button>
+
+    <div class="timer" id="timer"></div>
+
+    <div class="ad-inline">In-Quiz Ad</div>
+
+    <div id="quizArea"></div>
+
+    <div class="nav-buttons">
+      <button id="prevBtn" onclick="prevPage()">Previous</button>
+      <button id="nextBtn" onclick="nextPage()">Next</button>
+    </div>
+
+    <button id="submitAll" onclick="submitQuiz()">Submit Quiz</button>
+
+    <div id="scoreBox"></div>
+
+    <div class="ad-bottom">Bottom Banner Ad</div>
+  </div>
+
+  <div class="ad-side">Right Ad</div>
+</div>
+
+<script>
+// QUESTIONS - Now include options for MCQs
+const questionsOriginal = [
+
+{q:"Research is defined as a ____.","options":["systematic inquiry","random guessing","casual activity","daily routine"],"answer":"systematic inquiry"},
+
+{q:"According to Clifford Woody, research involves ____.","options":["memorizing facts","copying information","defining problems and testing conclusions","only guessing answers"],"answer":"defining problems and testing conclusions"},
+
+{q:"Research helps to ____.","options":["waste time","entertain people","avoid thinking","solve problems"],"answer":"solve problems"},
+
+{q:"Which of the following is part of research process?","options":["Cooking food","Sleeping","Collecting data","Playing games"],"answer":"Collecting data"},
+
+{q:"Research is mainly used to ____.","options":["gain knowledge","avoid study","ignore facts","create confusion"],"answer":"gain knowledge"},
+
+{q:"Slesinger and Stephenson defined research as manipulation of ____.","options":["books only","things, concepts or symbols","dreams","feelings"],"answer":"things, concepts or symbols"},
+
+{q:"Research helps to __ knowledge.","options":["hide","extend","destroy","ignore"],"answer":"extend"},
+
+{q:"French Ruth described research as ____.","options":["a joke","a game","problem solving process","random act"],"answer":"problem solving process"},
+
+{q:"Notter defined research as searching for ____.","options":["old books","stories","new facts","opinions"],"answer":"new facts"},
+
+{q:"Redman and Mory defined research as ____.","options":["trial only","random effort","guessing work","systematized effort"],"answer":"systematized effort"},
+
+{q:"Barnes said research deals with ____.","options":["food","music","sports","ideas"],"answer":"ideas"},
+
+{q:"Research is also a way of ____.","options":["losing data","acquiring knowledge","playing","wasting time"],"answer":"acquiring knowledge"},
+
+{q:"Descriptive knowledge helps in ____.","options":["sleeping","defining behaviors","avoiding work","guessing answers"],"answer":"defining behaviors"},
+
+{q:"Predictive knowledge helps to ____.","options":["avoid study","determine relationships","ignore data","guess randomly"],"answer":"determine relationships"},
+
+{q:"Authority as a source of knowledge comes from ____.","options":["parents and books","dreams","games","guessing"],"answer":"parents and books"},
+
+{q:"Personal experience is a source of ____.","options":["confusion","sleep","fear","knowledge"],"answer":"knowledge"},
+
+{q:"Trial and error means ____.","options":["copying answers","trying solutions until one works","giving up quickly","sleeping"],"answer":"trying solutions until one works"},
+
+{q:"Logical reasoning combines ____.","options":["experience and thinking","food","sleep","games"],"answer":"experience and thinking"},
+
+{q:"Inductive reasoning develops ____.","options":["random ideas","generalizations from observations","stories","dreams"],"answer":"generalizations from observations"},
+
+{q:"Deductive reasoning develops ____.","options":["feelings","specific predictions","random guesses","dreams"],"answer":"specific predictions"},
+
+{q:"Borrowing means using knowledge from ____.","options":["games","other disciplines","dreams","music"],"answer":"other disciplines"},
+
+{q:"Role modeling involves ____.","options":["arguing","ignoring","imitation","sleeping"],"answer":"imitation"},
+
+{q:"Intuition is also called a ____.","options":["formula","method","gut feeling","calculation"],"answer":"gut feeling"},
+
+{q:"Empiricism is knowledge gained through ____.","options":["songs","dreams","stories","observation"],"answer":"observation"},
+
+{q:"Research helps in ____.","options":["wasting","exploration","sleeping","destruction"],"answer":"exploration"},
+
+{q:"Speculation in research helps to ____.","options":["avoid thinking","form theories","destroy ideas","sleep"],"answer":"form theories"},
+
+{q:"Descriptive research focuses on ____.","options":["games","patterns and relationships","songs","dreams"],"answer":"patterns and relationships"},
+
+{q:"Explanatory research shows ____.","options":["random ideas","why things happen","nothing","dreams"],"answer":"why things happen"},
+
+{q:"Prediction research estimates ____.","options":["future outcomes","random ideas","past events","dreams"],"answer":"future outcomes"},
+
+{q:"Evaluation research helps to ____.","options":["guess","compare alternatives","sleep","ignore results"],"answer":"compare alternatives"},
+
+{q:"A paradigm is defined as ____.","options":["world view","story","food","game"],"answer":"world view"},
+
+{q:"Rossman defined paradigm as ____.","options":["random thought","shared understanding","idea","dream"],"answer":"shared understanding"},
+
+{q:"Ontology deals with ____.","options":["games","what is real","stories","dreams"],"answer":"what is real"},
+
+{q:"Epistemology studies ____.","options":["food","nature of knowledge","sleep","games"],"answer":"nature of knowledge"},
+
+{q:"Methodology explains ____.","options":["dreams","how knowledge is gained","songs","games"],"answer":"how knowledge is gained"},
+
+{q:"Paradigms help to ____.","options":["define how world works","sleep","confuse people","waste time"],"answer":"define how world works"},
+
+{q:"Paradigms define ____.","options":["random guesses","types of questions","songs","dreams"],"answer":"types of questions"},
+
+{q:"Positivism relies on ____.","options":["dreams","scientific methods","songs","stories"],"answer":"scientific methods"},
+
+{q:"Critical realism focuses on ____.","options":["power in society","songs","games","dreams"],"answer":"power in society"},
+
+{q:"Interpretivism is linked to ____.","options":["games","qualitative research","songs","dreams"],"answer":"qualitative research"},
+
+{q:"Critical humanism involves ____.","options":["social change","games","sleep","songs"],"answer":"social change"},
+
+
+{q:"Research is a systematic inquiry used to ____.","options":["solve problems","sleep","play","ignore"],"answer":"solve problems"},
+{q:"A good research must be ____.","options":["random","systematic","careless","confusing"],"answer":"systematic"},
+{q:"Logical research is guided by ____.","options":["guesses","feelings","rules of reasoning","luck"],"answer":"rules of reasoning"},
+{q:"Empirical research is based on ____.","options":["dreams","ideas","beliefs","real data"],"answer":"real data"},
+
+{q:"Replicable research means results can be ____.","options":["verified","hidden","ignored","changed"],"answer":"verified"},
+{q:"Inductive reasoning moves from ____.","options":["whole to part","specific to general","random to fixed","guess to answer"],"answer":"specific to general"},
+{q:"Deductive reasoning moves from ____.","options":["specific to general","ideas to guesses","general to specific","data to theory"],"answer":"general to specific"},
+{q:"Good research leads to ____.","options":["confusion","errors","bias","generalizations"],"answer":"generalizations"},
+
+{q:"Pure research aims to ____.","options":["improve theories","earn money","teach skills","reduce cost"],"answer":"improve theories"},
+{q:"Applied research focuses on ____.","options":["ideas","practical problems","dreams","beliefs"],"answer":"practical problems"},
+{q:"Exploratory research helps to ____.","options":["test facts","prove laws","develop hypotheses","reject ideas"],"answer":"develop hypotheses"},
+{q:"Descriptive research describes ____.","options":["causes","effects","reasons","characteristics"],"answer":"characteristics"},
+
+{q:"Correlational research studies ____.","options":["relationships","causes","effects","rules"],"answer":"relationships"},
+{q:"Explanatory research focuses on ____.","options":["description","prediction","cause and effect","measurement"],"answer":"cause and effect"},
+{q:"Quantitative research deals with ____.","options":["words","ideas","numbers","opinions"],"answer":"numbers"},
+{q:"Qualitative research focuses on ____.","options":["statistics","figures","graphs","meanings"],"answer":"meanings"},
+
+{q:"Nursing research helps to ____.","options":["develop knowledge","waste time","confuse nurses","reduce care"],"answer":"develop knowledge"},
+{q:"Research in nursing improves ____.","options":["games","patient care","sleep","noise"],"answer":"patient care"},
+{q:"Professionalism in nursing requires ____.","options":["laziness","delay","accountability","carelessness"],"answer":"accountability"},
+{q:"Critical thinking helps in ____.","options":["guessing","copying","sleeping","problem solving"],"answer":"problem solving"},
+
+{q:"Innovation in nursing leads to ____.","options":["new methods","old ideas","confusion","delay"],"answer":"new methods"},
+{q:"Evaluation helps to ____.","options":["ignore","compare results","hide facts","delay work"],"answer":"compare results"},
+{q:"Theory development is part of ____.","options":["games","fun","research","sleep"],"answer":"research"},
+{q:"Research helps in ____.","options":["playing","sleeping","eating","decision making"],"answer":"decision making"},
+
+{q:"Nursing research improves ____.","options":["health care","noise","games","delay"],"answer":"health care"},
+{q:"Autonomy in nursing means ____.","options":["dependence","freedom","confusion","fear"],"answer":"freedom"},
+{q:"Accountability means ____.","options":["hiding","blaming","responsibility","delay"],"answer":"responsibility"},
+{q:"Problem solving requires ____.","options":["guessing","copying","sleeping","thinking"],"answer":"thinking"},
+
+{q:"Research provides ____.","options":["knowledge","fear","confusion","noise"],"answer":"knowledge"},
+{q:"Scientific research is ____.","options":["systematic","random","careless","fun"],"answer":"systematic"},
+
+
+
+{q:"Research is a systematic inquiry used to ____.","options":["solve problems","sleep","play","ignore"],"answer":"solve problems"},
+{q:"A good research must be ____.","options":["random","systematic","careless","confusing"],"answer":"systematic"},
+{q:"Logical research is guided by ____.","options":["guesses","feelings","rules of reasoning","luck"],"answer":"rules of reasoning"},
+{q:"Empirical research is based on ____.","options":["dreams","ideas","beliefs","real data"],"answer":"real data"},
+
+{q:"Replicable research means results can be ____.","options":["verified","hidden","ignored","changed"],"answer":"verified"},
+{q:"Inductive reasoning moves from ____.","options":["whole to part","specific to general","random to fixed","guess to answer"],"answer":"specific to general"},
+{q:"Deductive reasoning moves from ____.","options":["specific to general","ideas to guesses","general to specific","data to theory"],"answer":"general to specific"},
+{q:"Good research leads to ____.","options":["confusion","errors","bias","generalizations"],"answer":"generalizations"},
+
+{q:"Pure research aims to ____.","options":["improve theories","earn money","teach skills","reduce cost"],"answer":"improve theories"},
+{q:"Applied research focuses on ____.","options":["ideas","practical problems","dreams","beliefs"],"answer":"practical problems"},
+{q:"Exploratory research helps to ____.","options":["test facts","prove laws","develop hypotheses","reject ideas"],"answer":"develop hypotheses"},
+{q:"Descriptive research describes ____.","options":["causes","effects","reasons","characteristics"],"answer":"characteristics"},
+
+{q:"Correlational research studies ____.","options":["relationships","causes","effects","rules"],"answer":"relationships"},
+{q:"Explanatory research focuses on ____.","options":["description","prediction","cause and effect","measurement"],"answer":"cause and effect"},
+{q:"Quantitative research deals with ____.","options":["words","ideas","numbers","opinions"],"answer":"numbers"},
+{q:"Qualitative research focuses on ____.","options":["statistics","figures","graphs","meanings"],"answer":"meanings"},
+
+{q:"Nursing research helps to ____.","options":["develop knowledge","waste time","confuse nurses","reduce care"],"answer":"develop knowledge"},
+{q:"Research in nursing improves ____.","options":["games","patient care","sleep","noise"],"answer":"patient care"},
+{q:"Professionalism in nursing requires ____.","options":["laziness","delay","accountability","carelessness"],"answer":"accountability"},
+{q:"Critical thinking helps in ____.","options":["guessing","copying","sleeping","problem solving"],"answer":"problem solving"},
+
+{q:"Innovation in nursing leads to ____.","options":["new methods","old ideas","confusion","delay"],"answer":"new methods"},
+{q:"Evaluation helps to ____.","options":["ignore","compare results","hide facts","delay work"],"answer":"compare results"},
+{q:"Theory development is part of ____.","options":["games","fun","research","sleep"],"answer":"research"},
+{q:"Research helps in ____.","options":["playing","sleeping","eating","decision making"],"answer":"decision making"},
+
+{q:"Nursing research improves ____.","options":["health care","noise","games","delay"],"answer":"health care"},
+{q:"Autonomy in nursing means ____.","options":["dependence","freedom","confusion","fear"],"answer":"freedom"},
+{q:"Accountability means ____.","options":["hiding","blaming","responsibility","delay"],"answer":"responsibility"},
+{q:"Problem solving requires ____.","options":["guessing","copying","sleeping","thinking"],"answer":"thinking"},
+
+{q:"Research provides ____.","options":["knowledge","fear","confusion","noise"],"answer":"knowledge"},
+{q:"Scientific research is ____.","options":["systematic","random","careless","fun"],"answer":"systematic"}
+
+
+
+
+
+
+];
+
+let questions = [];
+let userAnswers = [];
+let results = [];
+let currentPage = 0;
+let totalQuestions = 0;
+let timerInterval;
+let quizSubmitted = false;
+const pageSize = 5;
+
+// SHUFFLE
+function shuffle(arr){
+  return arr.sort(()=>Math.random()-0.5);
+}
+
+// START QUIZ
+function startQuiz(){
+  const count = parseInt(document.getElementById("range").value);
+  const minutes = parseInt(document.getElementById("timeLimit").value);
+
+  if(!count || !minutes || count > questionsOriginal.length){
+    alert("Enter valid number of questions and time.");
+    return;
+  }
+
+  clearInterval(timerInterval);
+  document.getElementById("scoreBox").innerHTML="";
+  document.getElementById("timer").innerText="";
+  document.getElementById("submitAll").style.display="none";
+
+  questions = shuffle([...questionsOriginal]).slice(0,count);
+  totalQuestions = questions.length;
+  userAnswers = Array(totalQuestions).fill("");
+  results = Array(totalQuestions).fill(null);
+  quizSubmitted = false;
+  currentPage = 0;
+
+  loadPage();
+  startTimer(minutes*60);
+}
+
+// TIMER
+function startTimer(seconds){
+  timerInterval = setInterval(()=>{
+    let m=Math.floor(seconds/60);
+    let s=seconds%60;
+
+    document.getElementById("timer").innerText=
+      `Time Left: ${m}:${s.toString().padStart(2,'0')}`;
+
+    if(seconds <= 0){
+      clearInterval(timerInterval);
+      submitQuiz();
+    }
+    seconds--;
+  },1000);
+}
+
+// LOAD PAGE
+function loadPage(){
+  const area = document.getElementById("quizArea");
+  area.innerHTML="";
+
+  const start=currentPage*pageSize;
+  const end=Math.min(start+pageSize,totalQuestions);
+
+  for(let i=start;i<end;i++){
+    let disabled = quizSubmitted ? "disabled" : "";
+    let optionsHtml = questions[i].options.map(opt =>
+      `<label>
+         <input type="radio" name="q${i}" value="${opt}" ${userAnswers[i]===opt?"checked":""} ${disabled} 
+           onclick="saveAnswer(${i},'${opt}')"> ${opt}
+       </label><br>`
+    ).join("");
+
+    area.innerHTML+=`
+      <div class="question-box">
+        <p><b>Q${i+1}.</b> ${questions[i].q}</p>
+        ${optionsHtml}
+        <div class="feedback ${results[i]===true?'correct':results[i]===false?'wrong':''}" id="fb${i}">
+          ${results[i]===true ? "Correct!" :
+            results[i]===false ? "Wrong! Correct: "+questions[i].answer : ""}
+        </div>
+      </div>`;
+  }
+
+  document.getElementById("prevBtn").style.display =
+    currentPage===0 ? "none":"inline-block";
+
+  document.getElementById("nextBtn").style.display =
+    end===totalQuestions ? "none":"inline-block";
+
+  checkIfAllAnswered();
+}
+
+// SAVE ANSWER
+function saveAnswer(index,value){
+  userAnswers[index] = value;
+  checkIfAllAnswered();
+}
+
+// CHECK IF ALL ANSWERED
+function checkIfAllAnswered(){
+  const allAnswered = userAnswers.every(ans => ans !== "");
+  if(!quizSubmitted){
+    document.getElementById("submitAll").style.display =
+      allAnswered ? "block" : "none";
+  }
+}
+
+// NAVIGATION
+function prevPage(){
+  if(currentPage>0){
+    currentPage--;
+    loadPage();
+  }
+}
+
+function nextPage(){
+  if((currentPage+1)*pageSize<totalQuestions){
+    currentPage++;
+    loadPage();
+  }
+}
+
+// SUBMIT QUIZ
+function submitQuiz(){
+  if(quizSubmitted) return;
+
+  clearInterval(timerInterval);
+  quizSubmitted = true;
+
+  let score=0;
+
+  for(let i=0;i<totalQuestions;i++){
+    const correct = userAnswers[i] === questions[i].answer;
+    results[i] = correct;
+    if(correct) score++;
+  }
+
+  document.getElementById("submitAll").style.display="none";
+  document.getElementById("scoreBox").innerHTML=
+    `Your Score: ${score} / ${totalQuestions}`;
+
+  loadPage();
+}
+</script>
+
+</body>
+</html>
